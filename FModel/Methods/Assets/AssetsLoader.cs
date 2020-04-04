@@ -278,6 +278,7 @@ namespace FModel.Methods.Assets
                             case "FortHardcoreModifierItemDefinition":
                             case "FortQuestItemDefinition":
                             case "FortFeatItemDefinition":
+                            case "AthenaDailyQuestDefinition":
                                 VisualImage = IconCreator.IconCreator.DrawNormalIconKThx(AssetMainToken["properties"].Value<JArray>());
                                 break;
                             case "FortChallengeBundleItemDefinition":
