@@ -172,11 +172,11 @@ For x32 users, you just have to clone or download the repository and build FMode
             <a href="https://twitter.com/XTigerHyperX" title="Twitter">🐦</a>
         </td>
         <td align="center">
-            <a href="https://github.com/ItsFireMonkey">
+            <a href="https://github.com/iFireMonkey">
                 <img src="https://avatars2.githubusercontent.com/u/38590471?s=200&v=4" width="100px;" alt="FireMonkey"/><br/>
                 <sub><b>FireMonkey</b></sub>
             </a><br>
-            <a href="https://github.com/ItsFireMonkey" title="Github">🔧</a>
+            <a href="https://github.com/iFireMonkey" title="Github">🔧</a>
             <a href="https://twitter.com/iFireMonkey" title="Twitter">🐦</a>
         </td>
     </tr>
