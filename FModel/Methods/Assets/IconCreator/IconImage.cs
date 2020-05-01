@@ -91,9 +91,20 @@ namespace FModel.Methods.Assets.IconCreator
 
                 if (assetPathName != null)
                 {
-                    // CID_716_Athena_Commando_M_BlueFlames
-                    if (smallPreviewImage != null && assetPathName.Value<string>().Equals("/Game/UI/Foundation/Textures/Icons/Heroes/Athena/Soldier/T-Soldier-HID-716-Athena-Commando-M-BlueFlames-L.T-Soldier-HID-716-Athena-Commando-M-BlueFlames-L"))
-                        assetPathName = smallPreviewImage["tag_data"]["asset_path_name"];
+                    if (smallPreviewImage != null)
+                    {
+                        switch (assetPathName.Value<string>())
+                        {
+                            // CID_716_Athena_Commando_M_BlueFlames
+                            case "/Game/UI/Foundation/Textures/Icons/Heroes/Athena/Soldier/T-Soldier-HID-716-Athena-Commando-M-BlueFlames-L.T-Soldier-HID-716-Athena-Commando-M-BlueFlames-L":
+                            // BID_481_GraffitiFuture
+                            case "/Game/UI/Foundation/Textures/Icons/Backpacks/T-Icon-Backpacks-481-GraffitiFuture.T-Icon-Backpacks-481-GraffitiFuture":
+                                assetPathName = smallPreviewImage["tag_data"]["asset_path_name"];
+                                break;
+                            default:
+                                break;
+                        }
+                    }
 
                     string texturePath = FoldersUtility.FixFortnitePath(assetPathName.Value<string>());
                     using (Stream image = AssetsUtility.GetStreamImageFromPath(texturePath))
