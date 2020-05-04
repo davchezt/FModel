@@ -113,7 +113,55 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                         JArray rewardsDataArray = AssetsUtility.GetPropertyTagText<JArray>(AssetProperties, "Rewards", "data");
                         JArray hiddenRewardsDataArray = AssetsUtility.GetPropertyTagText<JArray>(AssetProperties, "HiddenRewards", "data");
                         JToken rewardsTable = AssetsUtility.GetPropertyTagImport<JToken>(AssetProperties, "RewardsTable");
-                        if (rewardsDataArray != null)
+                        if (rewardsTable != null)
+                        {
+                            string rewardsTablePath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + rewardsTable.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
+                            if (!string.IsNullOrEmpty(rewardsTablePath))
+                            {
+                                jsonData = AssetsUtility.GetAssetJsonDataByPath(rewardsTablePath.Substring(0, rewardsTablePath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
+                                if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
+                                {
+                                    JToken AssetRewarsTableMainToken = AssetsUtility.ConvertJson2Token(jsonData);
+                                    if (AssetRewarsTableMainToken != null)
+                                    {
+                                        JArray propertiesArray = AssetRewarsTableMainToken["rows"].Value<JArray>();
+                                        if (propertiesArray != null)
+                                        {
+                                            JArray propertiesRewardTable = AssetsUtility.GetPropertyTagItemData<JArray>(propertiesArray, "Default", "properties");
+                                            if (propertiesRewardTable != null)
+                                            {
+                                                JToken templateIdToken = propertiesRewardTable.FirstOrDefault(item => string.Equals(item["name"].Value<string>(), "TemplateId"));
+                                                if (templateIdToken != null)
+                                                {
+                                                    string templateId = templateIdToken["tag_data"].Value<string>();
+                                                    if (templateId.Contains(":"))
+                                                        templateId = templateId.Split(':')[1];
+
+                                                    string templateIdPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + templateId.ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
+                                                    if (!string.IsNullOrEmpty(templateIdPath))
+                                                    {
+                                                        rewardPath = templateIdPath.Substring(0, templateIdPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase));
+                                                    }
+
+                                                    JToken quantityToken = propertiesRewardTable.FirstOrDefault(item => string.Equals(item["name"].Value<string>(), "Quantity"));
+                                                    if (quantityToken != null)
+                                                    {
+                                                        rewardQuantity = quantityToken["tag_data"].Value<string>();
+                                                    }
+
+                                                    BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity, assetPath);
+                                                    if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
+                                                    {
+                                                        BundleData.Add(currentData);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else if (rewardsDataArray != null)
                         {
                             if (rewardsDataArray[0]["struct_name"] != null && rewardsDataArray[0]["struct_type"] != null && string.Equals(rewardsDataArray[0]["struct_name"].Value<string>(), "FortItemQuantityPair"))
                             {
@@ -198,54 +246,6 @@ namespace FModel.Methods.Assets.IconCreator.ChallengeID
                                         if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
                                         {
                                             BundleData.Add(currentData);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else if (rewardsTable != null)
-                        {
-                            string rewardsTablePath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + rewardsTable.Value<string>().ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
-                            if (!string.IsNullOrEmpty(rewardsTablePath))
-                            {
-                                jsonData = AssetsUtility.GetAssetJsonDataByPath(rewardsTablePath.Substring(0, rewardsTablePath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase)));
-                                if (jsonData != null && AssetsUtility.IsValidJson(jsonData))
-                                {
-                                    JToken AssetRewarsTableMainToken = AssetsUtility.ConvertJson2Token(jsonData);
-                                    if (AssetRewarsTableMainToken != null)
-                                    {
-                                        JArray propertiesArray = AssetRewarsTableMainToken["rows"].Value<JArray>();
-                                        if (propertiesArray != null)
-                                        {
-                                            JArray propertiesRewardTable = AssetsUtility.GetPropertyTagItemData<JArray>(propertiesArray, "Default", "properties");
-                                            if (propertiesRewardTable != null)
-                                            {
-                                                JToken templateIdToken = propertiesRewardTable.FirstOrDefault(item => string.Equals(item["name"].Value<string>(), "TemplateId"));
-                                                if (templateIdToken != null)
-                                                {
-                                                    string templateId = templateIdToken["tag_data"].Value<string>();
-                                                    if (templateId.Contains(":"))
-                                                        templateId = templateId.Split(':')[1];
-
-                                                    string templateIdPath = AssetEntries.AssetEntriesDict.Where(x => x.Key.ToLowerInvariant().Contains("/" + templateId.ToLowerInvariant() + ".uasset")).Select(d => d.Key).FirstOrDefault();
-                                                    if (!string.IsNullOrEmpty(templateIdPath))
-                                                    {
-                                                        rewardPath = templateIdPath.Substring(0, templateIdPath.LastIndexOf(".", StringComparison.InvariantCultureIgnoreCase));
-                                                    }
-
-                                                    JToken quantityToken = propertiesRewardTable.FirstOrDefault(item => string.Equals(item["name"].Value<string>(), "Quantity"));
-                                                    if (quantityToken != null)
-                                                    {
-                                                        rewardQuantity = quantityToken["tag_data"].Value<string>();
-                                                    }
-
-                                                    BundleInfosEntry currentData = new BundleInfosEntry(questDescription, questCount, unlockType, rewardPath, rewardQuantity, assetPath);
-                                                    if (!BundleData.Any(item => item.TheQuestDescription.Equals(currentData.TheQuestDescription, StringComparison.InvariantCultureIgnoreCase) && item.TheQuestCount == currentData.TheQuestCount && string.Equals(item.TheAssetPath, currentData.TheAssetPath)))
-                                                    {
-                                                        BundleData.Add(currentData);
-                                                    }
-                                                }
-                                            }
                                         }
                                     }
                                 }
